@@ -1,16 +1,16 @@
 "use client";
 
-import Button from "@/app/components/Button";
-import Input from "@/app/components/inputs/Input";
-import { type } from "os";
-import { useCallback, useEffect, useState } from "react";
-import { FieldValues, SubmitHandler, set, useForm } from "react-hook-form";
-import AuthSocialButton from "./AuthSocialButton";
-import { BsGithub, BsGoogle } from "react-icons/bs";
 import axios from "axios";
-import { toast } from "react-hot-toast";
 import { signIn, useSession } from "next-auth/react";
+import { useCallback, useEffect, useState } from "react";
+import { BsGithub, BsGoogle } from "react-icons/bs";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+
+import Input from "@/app/components/inputs/Input";
+import AuthSocialButton from "./AuthSocialButton";
+import Button from "@/app/components/Button";
+import { toast } from "react-hot-toast";
 
 type Variant = "LOGIN" | "REGISTER";
 
@@ -18,11 +18,11 @@ const AuthForm = () => {
   const session = useSession();
   const router = useRouter();
   const [variant, setVariant] = useState<Variant>("LOGIN");
-  const [isloading, setIsloading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (session?.status === "authenticated") {
-      router.push("/users");
+      router.push("/conversations");
     }
   }, [session?.status, router]);
 
@@ -47,81 +47,107 @@ const AuthForm = () => {
   });
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    setIsloading(true);
+    setIsLoading(true);
 
     if (variant === "REGISTER") {
       axios
         .post("/api/register", data)
-        .then(() => signIn("credentials", data))
-        .catch(() => toast.error("Someting went wrong"))
-        .finally(() => setIsloading(false));
+        .then(() =>
+          signIn("credentials", {
+            ...data,
+            redirect: false,
+          })
+        )
+        .then((callback) => {
+          if (callback?.error) {
+            toast.error("Invalid credentials!");
+          }
+
+          if (callback?.ok) {
+            router.push("/conversations");
+          }
+        })
+        .catch(() => toast.error("Something went wrong!"))
+        .finally(() => setIsLoading(false));
     }
 
     if (variant === "LOGIN") {
       signIn("credentials", {
         ...data,
         redirect: false,
-      }).then((callback) => {
-        if (callback?.error) {
-          toast.error("Invalid credentials");
-        }
+      })
+        .then((callback) => {
+          if (callback?.error) {
+            toast.error("Invalid credentials!");
+          }
 
-        if (callback?.ok && !callback?.error) {
-          toast.success("Logged in");
-          router.push("/users");
-        }
-      });
+          if (callback?.ok) {
+            router.push("/conversations");
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   };
 
   const socialAction = (action: string) => {
-    setIsloading(true);
-    signIn(action, {
-      redirect: false,
-    })
+    setIsLoading(true);
+
+    signIn(action, { redirect: false })
       .then((callback) => {
         if (callback?.error) {
-          toast.error("Someting went wrong");
+          toast.error("Invalid credentials!");
         }
 
         if (callback?.ok) {
-          toast.success("Logged in");
+          router.push("/conversations");
         }
       })
-      .finally(() => setIsloading(false));
+      .finally(() => setIsLoading(false));
   };
 
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-      <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
+      <div
+        className="
+        bg-white
+          px-4
+          py-8
+          shadow
+          sm:rounded-lg
+          sm:px-10
+        "
+      >
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           {variant === "REGISTER" && (
             <Input
-              id="name"
-              label="Name"
-              disabled={isloading}
+              disabled={isLoading}
               register={register}
               errors={errors}
+              required
+              id="name"
+              label="Name"
             />
           )}
           <Input
-            id="email"
-            label="Email adress"
-            type="email"
+            disabled={isLoading}
             register={register}
             errors={errors}
-            disabled={isloading}
+            required
+            id="email"
+            label="Email address"
+            type="email"
           />
           <Input
+            disabled={isLoading}
+            register={register}
+            errors={errors}
+            required
             id="password"
             label="Password"
             type="password"
-            register={register}
-            errors={errors}
-            disabled={isloading}
           />
           <div>
-            <Button disabled={isloading} type="submit" fullWidth>
+            <Button disabled={isLoading} fullWidth type="submit">
               {variant === "LOGIN" ? "Sign in" : "Register"}
             </Button>
           </div>
@@ -156,15 +182,25 @@ const AuthForm = () => {
               onClick={() => socialAction("google")}
             />
           </div>
-
-          <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
+        </div>
+        <div
+          className="
+            flex 
+            gap-2 
+            justify-center 
+            text-sm 
+            mt-6 
+            px-2 
+            text-gray-500
+          "
+        >
+          <div>
             {variant === "LOGIN"
-              ? "New to messanger?"
+              ? "New to Messenger?"
               : "Already have an account?"}
-
-            <div onClick={toggleVariant} className="underline cursor-pointer">
-              {variant === "LOGIN" ? "Create an account" : "log in"}
-            </div>
+          </div>
+          <div onClick={toggleVariant} className="underline cursor-pointer">
+            {variant === "LOGIN" ? "Create an account" : "Login"}
           </div>
         </div>
       </div>
