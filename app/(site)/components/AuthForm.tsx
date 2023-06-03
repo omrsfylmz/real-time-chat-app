@@ -7,6 +7,8 @@ import { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, set, useForm } from "react-hook-form";
 import AuthSocialButton from "./AuthSocialButton";
 import { BsGithub, BsGoogle } from "react-icons/bs";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 type Variant = "LOGIN" | "REGISTER";
 
@@ -28,9 +30,9 @@ const AuthForm = () => {
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
+      name: "",
       email: "",
       password: "",
-      name: "",
     },
   });
 
@@ -38,7 +40,9 @@ const AuthForm = () => {
     setIsloading(true);
 
     if (variant === "REGISTER") {
-      // register
+      axios
+        .post("/api/register", data)
+        .catch(() => toast.error("Someting went wrong"));
     }
 
     if (variant === "LOGIN") {
