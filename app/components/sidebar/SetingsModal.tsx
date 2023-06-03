@@ -70,9 +70,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           <div className="border-b border-gray-900/10 pb-12">
             <h2
               className="
-                text-base
-                font-semibold
-                leading-7
+                text-base 
+                font-semibold 
+                leading-7 
                 text-gray-900
               "
             >
@@ -95,10 +95,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <label
                   htmlFor="photo"
                   className="
-                    block
-                    text-sm
-                    font-medium
-                    leading-6
+                    block 
+                    text-sm 
+                    font-medium 
+                    leading-6 
                     text-gray-900
                   "
                 >
@@ -131,10 +131,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         <div
           className="
-            mt-6
-            flex
-            items-center
-            justify-end
+            mt-6 
+            flex 
+            items-center 
+            justify-end 
             gap-x-6
           "
         >
