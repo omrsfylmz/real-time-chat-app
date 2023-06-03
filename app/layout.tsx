@@ -13,8 +13,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <ToasterContext />
-      <body>{children}</body>
+      <body>
+        <ToasterContext />
+        {children}
+      </body>
     </html>
   );
 }
