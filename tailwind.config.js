@@ -6,13 +6,11 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {
-   
-    },
+    extend: {},
   },
   plugins: [
     require('@tailwindcss/forms')({
-      strategy: 'class',
-    }),
+      strategy: 'class'
+    })
   ],
 }
