@@ -39,7 +39,7 @@
 ### Cloning the repository
 
 ```shell
-git clone git@github.com:omrsfylmz/full-stack-airbnb-clone.git
+git@github.com:omrsfylmz/real-time-chat-app.git
 ```
 
 ### Install packages
